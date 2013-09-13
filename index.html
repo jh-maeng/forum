@@ -1,22 +1,335 @@
 <!DOCTYPE HTML>
-<html><head>
+<html ng-app="forum" xmlns:ng="http://angularjs.org"><head>
 <title></title>
 <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta charset="utf-8" />
 <meta http-equiv="content-script-type" content="text/javascript" />
 <meta http-equiv="content-style-type" content="text/css" />
+<meta name="fragment" content="!" />
 
 <script src="http://ajax.googleapis.com/ajax/libs/chrome-frame/1.0.3/CFInstall.min.js"></script>
 <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
 
-<style>
-</style>
+<script src="http://netdna.bootstrapcdn.com/bootstrap/3.0.0/js/bootstrap.min.js"></script>
+<!--<link href="http://netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css" rel="stylesheet" />-->
+<link href="http://netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.no-icons.min.css" rel="stylesheet" />
+<link href="http://netdna.bootstrapcdn.com/font-awesome/3.2.1/css/font-awesome.min.css" rel="stylesheet" />
+
+<script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.0.8/angular.min.js"></script>
+
+<script src="assets/jPages.min.js"></script>
+<link href="assets/jPages.css" rel="stylesheet" />
 </head><body>
 
+<div ng-view></div>
+
+<div class="container">
+	<div>
+		<center>savage69kr -- <a href="https://github.com/jh-maeng/forum">https://github.com/jh-maeng/forum</a></center>
+	</div>
+</div>
+
+<script type="text/ng-template" id="list.html">
+	<div class="container">
+		<div class="page-header">
+			<h3 class="text-center">Unit5 Forum</h3>
+		</div>
+		
+		<div class="alert alert-danger" ng-show="error"><p>{{error}}</p></div>
+		
+		<div class="row">
+			<div class="col-md-6">
+				<div id="disqus-cw"></div>
+			</div>
+			
+			<div class="col-md-6">
+				<form method="POST" role="form" ng-submit="createNewThread()">
+					<div class="form-group">
+						<input type="text" class="form-control" placeholder="New Thread Title" name="title" ng-model="title" />
+					</div>
+					<button type="submit" class="btn btn-default"> Create! </button>
+				</form>
+				
+				<hr />
+				
+				<ul class="list-group" id="itemContainer">
+					<li class="list-group-item" ng-repeat="thread in threads">
+						<div class="pull-right">
+							<span class="label label-success">{{thread.likes}}</span>
+							<span class="label label-danger">{{thread.dislikes}}</span>
+						</div>
+						<a href="#!/thread/{{thread.id}}">{{thread.title}}</a>
+						[<a href="#!/thread/{{thread.id}}#disqus_thread" data-disqus-identifier="{{thread.id}}">#</a>]
+						<small><br />{{thread.createdAt}}</small>
+					</li>
+				</ul>
+				
+				<div class="holder"></div>
+			</div>
+			
+			<div class="col-md-4" style="display: none;">
+				<h3>Span 4</h3>
+				<p>Content</p>
+			</div>
+		</div>
+	</div>
+</script>
+
+<script type="text/ng-template" id="thread.html">
+	<ul class="breadcrumb">
+		<li><a href="/">Unit5 Forum</a></li>
+		<li class="active"><a href="#">{{title}}</a></li>
+	</ul>
+	
+	<div class="container">
+		<div class="page-header">
+			<h3>Unit5 Forum</h3>
+		</div>
+		
+		<h3>{{title}}<br /></h3>
+		
+		<div id="disqus_thread"></div>
+		<a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+	</div>
+</script>
+
+<style>
+#dsq-combo-widget ul,#dsq-combo-widget li,#dsq-combo-widget ol,#dsq-combo-widget div,#dsq-combo-widget p,#dsq-combo-widget a,#dsq-combo-widget cite,#dsq-combo-widget img{border:0;padding:0;margin:0;float:none;text-indent:0;background:none}
+#dsq-combo-widget ul,#dsq-combo-widget li,#dsq-combo-widget ol{list-style-type:none;list-style-image:none;background:none;display:block}
+#dsq-combo-widget #dsq-combo-content ul,#dsq-combo-widget #dsq-combo-content li,#dsq-combo-widget #dsq-combo-content ol,#dsq-combo-widget #dsq-combo-content div,#dsq-combo-widget #dsq-combo-content p,#dsq-combo-widget #dsq-combo-content a,#dsq-combo-widget #dsq-combo-content cite,#dsq-combo-widget #dsq-combo-content img{border:0;padding:0;margin:0;float:none;text-indent:0;background:none}
+#dsq-combo-widget #dsq-combo-content ul,#dsq-combo-widget #dsq-combo-content li,#dsq-combo-widget #dsq-combo-content ol{list-style-type:none;list-style-image:none;background:none;display:block}
+.dsq-clearfix:after{content:".";display:block;height:0;clear:both;visibility:hidden}
+#dsq-combo-widget{text-align:left}
+#dsq-combo-widget #dsq-combo-tabs{float:left}
+#dsq-combo-widget #dsq-combo-content{position:static}
+#dsq-combo-widget #dsq-combo-content h3{float:none;text-indent:0;background:none;padding:0;border:0;margin:0 0 10px 0;font-size:16px}
+#dsq-combo-widget #dsq-combo-tabs li{display:inline;float:left;margin-right:2px;padding:0px 5px;text-transform:uppercase}
+#dsq-combo-widget #dsq-combo-tabs li a{text-decoration:none;font-weight:bold;font-size:10px}
+#dsq-combo-widget #dsq-combo-content .dsq-combo-box{margin:0 0 20px;padding:12px;clear:both}
+#dsq-combo-widget #dsq-combo-content .dsq-combo-box li{padding-bottom:10px;margin-bottom:10px;overflow:hidden;word-wrap:break-word}
+#dsq-combo-widget #dsq-combo-content .dsq-combo-avatar{float:left;height:48px;width:48px;margin-right:15px}
+#dsq-combo-widget #dsq-combo-content .dsq-combo-box cite{font-weight:bold;font-size:14px}
+span.dsq-widget-clout{background-color:#FF7300;color:#FFFFFF;padding:0pt 2px}
+#dsq-combo-logo{text-align:right}
+#dsq-combo-widget.blue #dsq-combo-tabs li.dsq-active{background:#E1F3FC}
+#dsq-combo-widget.blue #dsq-combo-content .dsq-combo-box{background:#E1F3FC}
+#dsq-combo-widget.blue #dsq-combo-tabs li{background:#B5E2FD}
+#dsq-combo-widget.blue #dsq-combo-content .dsq-combo-box li{border-bottom:1px dotted #B5E2FD}
+#dsq-combo-widget.grey #dsq-combo-tabs li.dsq-active{background:#f0f0f0}
+#dsq-combo-widget.grey #dsq-combo-content .dsq-combo-box{background:#f0f0f0}
+#dsq-combo-widget.grey #dsq-combo-tabs li{background:#ccc}
+#dsq-combo-widget.grey #dsq-combo-content .dsq-combo-box li{border-bottom:1px dotted #ccc}
+#dsq-combo-widget.green #dsq-combo-tabs li.dsq-active{background:#f4ffea}
+#dsq-combo-widget.green #dsq-combo-content .dsq-combo-box{background:#f4ffea}
+#dsq-combo-widget.green #dsq-combo-tabs li{background:#d7edce}
+#dsq-combo-widget.green #dsq-combo-content .dsq-combo-box li{border-bottom:1px dotted #d7edce}
+#dsq-combo-widget.red #dsq-combo-tabs li.dsq-active{background:#fad8d8}
+#dsq-combo-widget.red #dsq-combo-content .dsq-combo-box{background:#fad8d8}
+#dsq-combo-widget.red #dsq-combo-tabs li{background:#fdb5b5}
+#dsq-combo-widget.red #dsq-combo-content .dsq-combo-box li{border-bottom:1px dotted #fdb5b5}
+#dsq-combo-widget.orange #dsq-combo-tabs li.dsq-active{background:#fae6d8}
+#dsq-combo-widget.orange #dsq-combo-content .dsq-combo-box{background:#fae6d8}
+#dsq-combo-widget.orange #dsq-combo-tabs li{background:#fddfb5}
+#dsq-combo-widget.orange #dsq-combo-content .dsq-combo-box li{border-bottom:1px dotted #fddfb5}
+</style>
+<script>
+(function(){
+	var s=document.createElement('script');s.async=true;s.type='text/javascript';
+	s.src='http://forumborn81com.disqus.com/count.js';
+	(document.getElementsByTagName('HEAD')[0] || document.getElementsByTagName('BODY')[0]).appendChild(s);
+}());
+
+function dsqComboTab(_tab){
+	document.getElementById('dsq-combo-people').style.display='none';
+	document.getElementById('dsq-combo-popular').style.display='none';
+	document.getElementById('dsq-combo-recent').style.display='none';
+	document.getElementById('dsq-combo-tab-people').className='dsq-combo-tab';
+	document.getElementById('dsq-combo-tab-popular').className='dsq-combo-tab';
+	document.getElementById('dsq-combo-tab-recent').className='dsq-combo-tab';
+	document.getElementById('dsq-combo-'+_tab).style.display='block';
+	document.getElementById('dsq-combo-tab-'+_tab).className='dsq-combo-tab dsq-active';
+}
+</script>
 
 <script>
+angular.module('forum',['forumService'])
+	.config(['$locationProvider','$routeProvider',function($locationProvider,$routeProvider){
+		$locationProvider.html5Mode(true).hashPrefix('!');
+		
+		$routeProvider
+			.when('/',{controller:ListCtrl,templateUrl:'list.html'})
+			.when('/thread/:id',{controller:ThreadCtrl,templateUrl:'thread.html'})
+			.otherwise({redirectTo:'/'})
+		;
+	}])
+;
 
+angular.module('forumService',[])
+	.factory('DisqusSetting',function($rootScope){
+		return {
+			 ready:false
+			,shortname:'forumborn81com'
+			,public_key:'gNX7deNuStYmzCA8APYEC1jxzClZ1i2Z3Ly3rQeTPw4grZHRE5O5qHEUL1tgzfev'
+			,secret_key:'Wyz51oqDBSiQ31Zu7KhbVmN4ujK39eQCZ6x1UIQBoQHtGlol8QY6J8aGM30nf0q6'
+			,access_token:'cadb6fc1b4034e438444681391004df0'
+		}
+	})
+;
+
+function ListCtrl($scope,DisqusSetting,$location,$http){
+	var getThreads=function(){
+		$http({
+			 method:'GET',cache:false
+			//,headers:{'Content-Type':'application/x-www-form-urlencoded'}
+			,url:'https://disqus.com/api/3.0/threads/list.json'
+			,responseType:'json'
+			,params:{
+				 api_key:DisqusSetting.public_key
+				,forum:DisqusSetting.shortname
+				,thread:null
+				,limit:25
+			}
+		}).success(function(_data,_status,_headers,_config){
+			console.log('success',_data);
+			
+			var cursor=_data.cursor;
+			if(cursor['hasNext']){
+				cursor['next']
+			}
+			if(cursor['hasPrev']){
+				cursor['prev']
+			}
+			
+			var response=_data.response;
+			var threads=[];
+			for(var i=0,j=response.length;i<j;i+=1){
+				var thread=response[i];
+				if(!thread['identifiers'] || thread['identifiers'][0]!=thread['title']){
+					continue;
+				}
+				
+				threads.push({
+					 title:thread['title']
+					,likes:thread['likes']
+					,dislikes:thread['dislikes']
+					,createdAt:thread['createdAt']
+				});
+			}
+			
+			$scope.threads=threads;
+			
+			$('div.holder').jPages({containerID:'itemContainer',perPage:5});
+		}).error(function(_data,_status,_headers,_config){
+			console.log('error',_data);
+			$scope.error='['+_data.code+'] '+_data.response;
+		});
+	};
+	
+	var createNewThread=function(_title){
+		$http({
+			 method:'POST',cache:false
+			//,headers:{'Content-Type':'application/x-www-form-urlencoded'}
+			,url:'https://disqus.com/api/3.0/threads/create.json'
+			,responseType:'json'
+			,params:{
+				 api_key:DisqusSetting.public_key
+				,api_secret:DisqusSetting.secret_key
+				,access_token:DisqusSetting.access_token
+				,forum:DisqusSetting.shortname
+				,title:_title
+				,identifier:_title
+			}
+		}).success(function(_data,_status,_headers,_config){
+			console.log('success',_data);
+			
+			var response=_data.response;
+			createNewThread_post(response['id'],_title);
+		}).error(function(_data,_status,_headers,_config){
+			console.log('error',_data);
+			$scope.error='['+_data.code+'] '+_data.response;
+		});
+	};
+	var createNewThread_post=function(_id,_title){
+		$http({
+			 method:'POST',cache:false
+			//,headers:{'Content-Type':'application/x-www-form-urlencoded'}
+			,url:'https://disqus.com/api/3.0/posts/create.json'
+			,responseType:'json'
+			,params:{
+				 api_key:DisqusSetting.public_key
+				,api_secret:DisqusSetting.secret_key
+				,access_token:DisqusSetting.access_token
+				,thread:_id
+				,message:'Post about `'+_title+'` here!'
+			}
+		}).success(function(_data,_status,_headers,_config){
+			console.log('success',_data);
+			
+			$location.path('/thread/'+_id);
+		}).error(function(_data,_status,_headers,_config){
+			console.log('error',_data);
+			$scope.error='['+_data.code+'] '+_data.response;
+		});
+	};
+	
+	var getCombinationWidget=function(){
+		$http({
+			 method:'GET',cache:false
+			//,headers:{'Content-Type':'application/x-www-form-urlencoded'}
+			,url:'http://'+DisqusSetting.shortname+'.disqus.com/combination_widget.js'
+			,responseType:'text'
+			,params:{
+				 num_items:5
+				,hide_mods:0
+				,color:'blue'
+				,default_tab:'people'
+				,excerpt_length:200
+			}
+		}).success(function(_data,_status,_headers,_config){
+			//console.log('success',_data);
+			$('#disqus-cw').html(_data.split('</style>\\')[1].split('\\').join('')+'<a href="http://disqus.com/">Powered by Disqus</a>');
+		});
+	};
+	
+	$scope.createNewThread=function($event){
+		if($event){
+			$event.preventDefault();
+		}
+		
+		createNewThread($scope.title);
+	};
+	
+	getThreads();
+	getCombinationWidget();
+}
+
+function ThreadCtrl($scope,DisqusSetting,$routeParams,$http){
+	if(DisqusSetting.ready){
+		//angular.element(document.getElementById('disqus_thread')).html('');
+		
+		DISQUS.reset({
+			 reload:true
+			,config:function(){
+				this.page.identifier=$routeParams.id;
+				this.page.url='http://forum.born81.com/#!/thread/'+$routeParams.id;
+			}
+		});
+	}else{
+		DisqusSetting.ready=true;
+		
+		window.disqus_shortname=DisqusSetting.shortname;
+		window.disqus_identifier=$routeParams.id;
+		window.disqus_url='http://forum.born81.com/#!/thread/'+$routeParams.id;
+		
+		var dsq=document.createElement('script');dsq.async=true;dsq.type='text/javascript';
+		dsq.src='http://'+DisqusSetting.shortname+'.disqus.com/embed.js';
+		(document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+	}
+	/** /
+	<button type="button" class="dsq-button-small dsq-paginate-all-button" onclick="return DISQUS.dtpl.actions.fire('thread.paginate', 1, this, 0);">Show all comments</button>
+	/**/
+}
 </script>
 
 </body></html>
